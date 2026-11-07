@@ -85,31 +85,71 @@ h1 span{color:#ff7a00}
 </main>
 </div>
 <script>
-const input=document.getElementById("input");
-const messages=document.getElementById("messages");
-const content=document.getElementById("content");
-function addMessage(text,type){
- const div=document.createElement("div");
- div.className="msg "+type;
- div.textContent=text;
- messages.appendChild(div);
- content.scrollTop=content.scrollHeight;
+const API_URL = "https://bharvex-ai-api.17yadav05ankit.workers.dev";
+
+const input = document.getElementById("input");
+const messages = document.getElementById("messages");
+const content = document.getElementById("content");
+const send = document.getElementById("send");
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  content.scrollTop = content.scrollHeight;
+  return div;
 }
-function usePrompt(text){input.value=text;sendMessage()}
-function newChat(){
- messages.innerHTML="";
- document.getElementById("welcome").style.display="block";
- input.focus();
+
+function usePrompt(text) {
+  input.value = text;
+  sendMessage();
 }
-async function sendMessage(){
- const text=input.value.trim();
- if(!text)return;
- document.getElementById("welcome").style.display="none";
- addMessage(text,"user");
- input.value="";
- addMessage("AI connection setup is the next step. Your message interface is ready.","bot");
+
+function newChat() {
+  messages.innerHTML = "";
+  document.getElementById("welcome").style.display = "block";
+  input.focus();
 }
-input.addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text || send.disabled) return;
+
+  document.getElementById("welcome").style.display = "none";
+  addMessage(text, "user");
+  input.value = "";
+  send.disabled = true;
+
+  const loading = addMessage("BHARVEX AI is thinking...", "bot");
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.details || data.error || "Server error");
+    }
+
+    loading.textContent = data.reply || "No response received.";
+
+  } catch (error) {
+    loading.textContent = "Connection error: " + error.message;
+  } finally {
+    send.disabled = false;
+    input.focus();
+    content.scrollTop = content.scrollHeight;
+  }
+}
+
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendMessage();
+});
 </script>
 </body>
 </html>
