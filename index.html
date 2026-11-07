@@ -91,7 +91,7 @@ const input = document.getElementById("input");
 const messages = document.getElementById("messages");
 const content = document.getElementById("content");
 const send = document.getElementById("send");
-
+const history = [];
 function addMessage(text, type) {
   const div = document.createElement("div");
   div.className = "msg " + type;
@@ -108,6 +108,7 @@ function usePrompt(text) {
 
 function newChat() {
   messages.innerHTML = "";
+  history.length = 0;
   document.getElementById("welcome").style.display = "block";
   input.focus();
 }
@@ -127,7 +128,10 @@ async function sendMessage() {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({
+  message: text,
+  history: history
+})
     });
 
     const data = await response.json();
@@ -136,7 +140,17 @@ async function sendMessage() {
       throw new Error(data.details || data.error || "Server error");
     }
 
-    loading.textContent = data.reply || "No response received.";
+    const reply = data.reply || "No response received.";
+loading.textContent = reply;
+
+history.push(
+  { role: "user", text: text },
+  { role: "model", text: reply }
+);
+
+if (history.length > 20) {
+  history.splice(0, history.length - 20);
+}
 
   } catch (error) {
     loading.textContent = "Connection error: " + error.message;
