@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHARVEX AI — Built for the World</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#05070d;color:white;height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:260px;background:#090d16;border-right:1px solid #202638;padding:22px;display:flex;flex-direction:column}
+.logo{font-size:25px;font-weight:900;letter-spacing:2px;color:white}
+.logo span{color:#ff7a00}
+.tag{font-size:9px;color:#9ba5b7;letter-spacing:1px;margin-top:7px}
+.new{margin-top:35px;padding:14px;background:#ff7a00;color:#080808;border:0;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer}
+.side-note{margin-top:auto;color:#788398;font-size:11px;line-height:1.8}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:65px;border-bottom:1px solid #202638;display:flex;align-items:center;justify-content:space-between;padding:0 25px}
+.top strong{font-size:14px;letter-spacing:1px}
+.status{font-size:11px;color:#20c77a}
+.content{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:35px 18px}
+.welcome{text-align:center;margin:auto 0;max-width:650px}
+.badge{display:inline-block;border:1px solid #57320e;color:#ff9b35;padding:7px 13px;border-radius:30px;font-size:11px;letter-spacing:1px}
+h1{font-size:clamp(35px,7vw, sixty);font-size:clamp(35px,7vw,60px);margin:24px 0 12px;font-weight:900}
+h1 span{color:#ff7a00}
+.sub{color:#9ba5b7;line-height:1.7;font-size:14px}
+.suggestions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
+.suggestion{background:#101725;border:1px solid #253047;color:#dce4f2;padding:15px;border-radius:12px;text-align:left;cursor:pointer}
+.suggestion:hover{border-color:#ff7a00}
+.messages{width:100%;max-width:760px}
+.msg{padding:14px 17px;margin:12px 0;border-radius:14px;line-height:1.6;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.user{background:#172235;margin-left:auto;max-width:85%}
+.bot{background:#101725;border:1px solid #253047;margin-right:auto;max-width:90%}
+.bottom{padding:15px 18px 20px;border-top:1px solid #202638}
+.inputbox{max-width:760px;margin:auto;display:flex;gap:10px;background:#101725;border:1px solid #344057;border-radius:15px;padding:9px}
+.inputbox input{flex:1;min-width:0;background:none;border:0;outline:none;color:white;padding:10px;font-size:14px}
+.inputbox button{background:#ff7a00;border:0;border-radius:10px;padding:0 19px;font-weight:bold;cursor:pointer}
+.disclaimer{text-align:center;color:#707c91;font-size:10px;margin-top:10px}
+@media(max-width:650px){
+.sidebar{width:66px;padding:15px 8px;align-items:center}
+.logo{font-size:15px;letter-spacing:0}
+.tag,.side-note{display:none}
+.new{font-size:0;width:45px;height:45px;padding:0;margin-top:28px}
+.new:after{content:"+";font-size:25px}
+.top{padding:0 15px}
+.suggestions{grid-template-columns:1fr}
+.content{padding:25px 14px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="logo">BHAR<span>VEX</span></div>
+<div class="tag">BORN IN INDIA · BUILT FOR THE WORLD</div>
+<button class="new" onclick="newChat()">＋ New Chat</button>
+<div class="side-note">BHARVEX AI 2.0<br>WE DON'T FOLLOW THE FUTURE.<br>WE BUILD IT.<br><br>🇮🇳 Made with vision in India.</div>
+</aside>
+<main class="main">
+<header class="top">
+<strong>BHARVEX AI <span style="color:#ff7a00">2.0</span></strong>
+<span class="status">● Interface Ready</span>
+</header>
+<section class="content" id="content">
+<div class="welcome" id="welcome">
+<div class="badge">✦ THE FUTURE STARTS HERE</div>
+<h1>Think beyond.<br><span>Build beyond.</span></h1>
+<p class="sub">Welcome to BHARVEX AI.<br>Your intelligent assistant for ideas, learning and innovation.</p>
+<div class="suggestions">
+<button class="suggestion" onclick="usePrompt('Explain Artificial Intelligence in simple Hindi')">✦ Learn something new</button>
+<button class="suggestion" onclick="usePrompt('Help me build a new project')">⌘ Build a project</button>
+<button class="suggestion" onclick="usePrompt('Write a professional email')">✎ Write something</button>
+<button class="suggestion" onclick="usePrompt('Give me creative business ideas')">◈ Explore ideas</button>
+</div>
+</div>
+<div class="messages" id="messages"></div>
+</section>
+<footer class="bottom">
+<div class="inputbox">
+<input id="input" type="text" placeholder="Message BHARVEX AI..." autocomplete="off">
+<button id="send" onclick="sendMessage()">➤</button>
+</div>
+<div class="disclaimer">BHARVEX AI can make mistakes. Verify important information.</div>
+</footer>
+</main>
+</div>
+<script>
+const input=document.getElementById("input");
+const messages=document.getElementById("messages");
+const content=document.getElementById("content");
+function addMessage(text,type){
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ messages.appendChild(div);
+ content.scrollTop=content.scrollHeight;
+}
+function usePrompt(text){input.value=text;sendMessage()}
+function newChat(){
+ messages.innerHTML="";
+ document.getElementById("welcome").style.display="block";
+ input.focus();
+}
+async function sendMessage(){
+ const text=input.value.trim();
+ if(!text)return;
+ document.getElementById("welcome").style.display="none";
+ addMessage(text,"user");
+ input.value="";
+ addMessage("AI connection setup is the next step. Your message interface is ready.","bot");
+}
+input.addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+</script>
+</body>
+</html>
